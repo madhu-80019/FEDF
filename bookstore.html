@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BookHaven - Online Bookstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .book-section, .cart-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .book {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #f0f2f5, #ffffff);
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+        
+        .book-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        
+        .book-author {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .book-price {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+        
+        .book-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        button {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .out-of-stock {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            border-left: 3px solid #28a745;
+        }
+        
+        .cart-item-info {
+            flex-grow: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .cart-item-price {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .remove-btn {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+        
+        .remove-btn:hover {
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .cart-total {
+            background: linear-gradient(145deg, #28a745, #20c997);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .item-count {
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .book {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 BookHaven</h1>
+        <p>Discover Your Next Great Read</p>
+    </div>
+    
+    <div class="container">
+        <div class="book-section">
+            <h2 class="section-title">📖 Featured Books</h2>
+            <div id="bookList"></div>
+        </div>
+        
+        <div class="cart-section">
+            <h2 class="section-title">🛒 Shopping Cart <span id="cartCount" class="item-count" style="display:none;">0</span></h2>
+            <div id="cartItems">
+                <div class="empty-cart">Your cart is empty</div>
+            </div>
+            <div class="cart-total" id="cartTotal">Total: ₹0</div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Mock data
+        const books = [
+            { title: "JavaScript Essentials", author: "John Doe", price: 499, availability: "in stock" },
+            { title: "Learn React", author: "Jane Smith", price: 699, availability: "in stock" },
+            { title: "Node.js in Action", author: "Mark Lee", price: 599, availability: "out of stock" },
+            { title: "Python for Everyone", author: "Ramya Krishna", price: 450, availability: "in stock" },
+            { title: "CSS Mastery", author: "Sarah Johnson", price: 550, availability: "in stock" },
+            { title: "Database Design", author: "Mike Chen", price: 750, availability: "out of stock" }
+        ];
+
+        let cart = [];
+
+        // Add book to cart
+        function addToCart(book) {
+            cart.push(book);
+            updateCartCount();
+        }
+
+        // Remove book by index
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+        }
+
+        // Calculate total price
+        function calculateTotal() {
+            return cart.reduce((sum, book) => sum + book.price, 0);
+        }
+
+        // Update cart count badge
+        function updateCartCount() {
+            const cartCount = document.getElementById("cartCount");
+            if (cart.length > 0) {
+                cartCount.textContent = cart.length;
+                cartCount.style.display = "inline-flex";
+            } else {
+                cartCount.style.display = "none";
+            }
+        }
+
+        // Display books
+        function displayBooks() {
+            const bookList = document.getElementById("bookList");
+            bookList.innerHTML = "";
+            
+            books.forEach((book, index) => {
+                const bookDiv = document.createElement("div");
+                bookDiv.classList.add("book");
+                bookDiv.innerHTML = `
+                    <div class="book-info">
+                        <h3>${book.title}</h3>
+                        <div class="book-author">by ${book.author}</div>
+                        <div class="book-price">₹${book.price}</div>
+                    </div>
+                    <div class="book-actions">
+                        ${book.availability === "in stock"
+                            ? `<button data-index="${index}">Add to Cart</button>`
+                            : `<span class="out-of-stock">Out of Stock</span>`
+                        }
+                    </div>
+                `;
+                bookList.appendChild(bookDiv);
+            });
+
+            // Attach event listeners to "Add to Cart" buttons
+            bookList.querySelectorAll("button").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const idx = e.target.getAttribute("data-index");
+                    addToCart(books[idx]);
+                    updateCartUI(cart);
+                    
+                    // Add visual feedback
+                    e.target.textContent = "Added!";
+                    e.target.style.background = "#28a745";
+                    setTimeout(() => {
+                        e.target.textContent = "Add to Cart";
+                        e.target.style.background = "";
+                    }, 1000);
+                });
+            });
+        }
+
+        // Update cart UI
+        function updateCartUI(cartData) {
+            const cartItemsDiv = document.getElementById("cartItems");
+            const cartTotalDiv = document.getElementById("cartTotal");
+            
+            if (cartData.length === 0) {
+                cartItemsDiv.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+            } else {
+                cartItemsDiv.innerHTML = "";
+                cartData.forEach((book, index) => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.classList.add("cart-item");
+                    itemDiv.innerHTML = `
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${book.title}</div>
+                            <div class="cart-item-price">₹${book.price}</div>
+                        </div>
+                        <button class="remove-btn" data-index="${index}">Remove</button>
+                    `;
+                    cartItemsDiv.appendChild(itemDiv);
+                });
+
+                // Attach remove event listeners
+                cartItemsDiv.querySelectorAll(".remove-btn").forEach(btn => {
+                    btn.addEventListener("click", (e) => {
+                        const idx = e.target.getAttribute("data-index");
+                        removeFromCart(idx);
+                        updateCartUI(cart);
+                    });
+                });
+            }
+
+            // Update total
+            cartTotalDiv.textContent = `Total: ₹${calculateTotal()}`;
+        }
+
+        // Initialize the app
+        displayBooks();
+        updateCartUI(cart);
+    </script>
+</body>
+</html>
