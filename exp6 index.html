@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🌦 Modern Weather App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Poppins", sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #6dd5fa, #2980b9);
+      margin: 0;
+      padding: 40px 20px;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #app {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      max-width: 400px;
+      width: 100%;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    h2 {
+      color: #0056b3;
+      margin-bottom: 15px;
+    }
+    input {
+      padding: 10px;
+      width: 70%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 14px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .weather {
+      margin-top: 25px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .weather h3 {
+      margin-bottom: 5px;
+    }
+    .emoji {
+      font-size: 40px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .error {
+      color: #d62828;
+      margin-top: 15px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h2>🌦 Weather App</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button id="searchBtn">Get Weather</button>
+
+    <div class="weather" id="weather"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <script>
+    const apiKey = "0e55753b3b447e61cf143cbac0bb76d2"; // 🔑 Replace with your OpenWeatherMap API key
+    const searchBtn = document.getElementById("searchBtn");
+    const cityInput = document.getElementById("cityInput");
+    const weatherDiv = document.getElementById("weather");
+    const errorDiv = document.getElementById("error");
+
+    // Function to get emoji for weather condition
+    function getWeatherEmoji(desc) {
+      const lower = desc.toLowerCase();
+      if (lower.includes("sun") || lower.includes("clear")) return "☀️";
+      if (lower.includes("cloud")) return "☁️";
+      if (lower.includes("rain")) return "🌧️";
+      if (lower.includes("storm") || lower.includes("thunder")) return "⛈️";
+      if (lower.includes("snow")) return "❄️";
+      return "🌤️";
+    }
+
+    async function getWeather(city) {
+      try {
+        errorDiv.textContent = "";
+        weatherDiv.innerHTML = "<p>Loading...</p>";
+
+        const res = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+        );
+
+        if (!res.ok) throw new Error("City not found!");
+
+        const data = await res.json();
+        const desc = data.weather[0].description;
+        const emoji = getWeatherEmoji(desc);
+
+        // Save last searched city
+        localStorage.setItem("lastCity", city);
+
+        weatherDiv.innerHTML = `
+          <span class="emoji">${emoji}</span>
+          <h3>${data.name}, ${data.sys.country}</h3>
+          <p>🌡 <strong>${data.main.temp}</strong> °C</p>
+          <p>☁ ${desc}</p>
+          <p>💧 Humidity: ${data.main.humidity}%</p>
+        `;
+      } catch (err) {
+        weatherDiv.innerHTML = "";
+        errorDiv.textContent = "❌ " + err.message;
+      }
+    }
+
+    // Handle search button
+    searchBtn.addEventListener("click", () => {
+      const city = cityInput.value.trim();
+      if (city) {
+        getWeather(city);
+      } else {
+        errorDiv.textContent = "Please enter a city name!";
+      }
+    });
+
+    // Handle Enter key
+    cityInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        searchBtn.click();
+      }
+    });
+
+    // Load last searched city on page load
+    window.addEventListener("load", () => {
+      const lastCity = localStorage.getItem("lastCity");
+      if (lastCity) {
+        cityInput.value = lastCity;
+        getWeather(lastCity);
+      }
+    });
+  </script>
+</body>
+</html>
